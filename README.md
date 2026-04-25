@@ -1,36 +1,60 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Catalyst: AI-Powered Talent Scouting & Engagement Agent
 
-## Getting Started
+Catalyst is an AI agent designed to revolutionize the recruiting process. Instead of manually sifting through resumes and chasing candidate interest, Catalyst takes a Job Description, discovers the best matches, and autonomously engages them conversationally to assess their genuine interest. It then outputs a ranked shortlist scored on two dimensions: Match Score and Interest Score.
 
-First, run the development server:
+## Features
+- **Intelligent JD Parsing & Matching**: Uses LLMs to understand deep requirements from a job description and scores candidates with a transparent "Match Explanation".
+- **Autonomous Engagement**: Simulates a conversational outreach where the AI Recruiter talks to the candidate to gauge their enthusiasm and salary expectations.
+- **Dynamic Scoring System**: Calculates a "Match Score" (how well skills align) and an "Interest Score" (how engaged the candidate is), combining them into an overall ranking.
+- **Premium UI**: Built with Next.js, Tailwind CSS, and Framer Motion for a stunning, recruiter-friendly experience.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Architecture & Logic
+
+```mermaid
+graph TD
+    A[Recruiter] -->|Inputs JD| B(Frontend Dashboard)
+    B -->|API: /api/match| C{AI Matching Engine}
+    C -->|Reads| D[(Candidate Pool JSON)]
+    C -->|Calculates Match Score & Reason| B
+    B -->|Displays Ranked List| A
+    
+    A -->|Clicks Candidate| E(Simulated Outreach UI)
+    E -->|Candidate Chats| F{AI Conversational Agent}
+    F -->|API: /api/chat| G((LLM - Gemini))
+    G -->|Updates Interest Score & Replies| F
+    F -->|Updates Dashboard| B
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Scoring Logic
+- **Match Score (0-100)**: Calculated by the LLM by comparing the candidate's skills, experience, and role against the nuanced requirements in the JD.
+- **Interest Score (0-100)**: Calculated by the LLM during the chat. It analyzes the sentiment, responsiveness, and alignment of the candidate's replies.
+- **Combined Score**: The final ranking uses a weighted formula: `(Match Score * 0.6) + (Interest Score * 0.4)`. Unassessed candidates default to just their Match Score weight.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Local Setup Instructions
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. **Clone the repository** (or extract the folder).
+2. **Install dependencies**:
+   \`\`\`bash
+   npm install
+   \`\`\`
+3. **Configure the AI (Required for full experience)**:
+   - Get a free API key from [Google AI Studio](https://aistudio.google.com/).
+   - Create a \`.env.local\` file in the root directory:
+     \`\`\`env
+     GEMINI_API_KEY=your_api_key_here
+     \`\`\`
+     *(Note: If no key is provided, the app will use built-in fallback mock logic so you can still test the UI!)*
+4. **Run the development server**:
+   \`\`\`bash
+   npm run dev
+   \`\`\`
+5. Open [http://localhost:3000](http://localhost:3000) with your browser.
 
-## Learn More
+## Sample Inputs and Outputs
+- **Input JD**: "Looking for a Senior Full Stack Engineer with 5+ years of React, Node.js, and AWS experience. Must be comfortable with microservices."
+- **Matching Output**: The dashboard will surface "Alex Rivera" (7 years exp, React/Node/AWS) with a 95% Match Score and an explanation: *"Strong match due to background in React and Next.js which aligns with the JD."*
+- **Chat Simulation Input**: (As candidate) "Yes, I am very interested! What is the salary range?"
+- **Chat Output**: The AI replies with details, and the candidate's Interest Score jumps to 85% on the dashboard.
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+Built for the Deccan AI Catalyst Hackathon.
