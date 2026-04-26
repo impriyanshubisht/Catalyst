@@ -30,6 +30,11 @@ graph TD
 - **Interest Score (0-100)**: Calculated by the LLM during the chat. It analyzes the sentiment, responsiveness, and alignment of the candidate's replies.
 - **Combined Score**: The final ranking uses a weighted formula: `(Match Score * 0.6) + (Interest Score * 0.4)`. Unassessed candidates default to just their Match Score weight.
 
+### Technical Implementation & Trade-offs
+1. **JSON Mode over Prompt Engineering**: We initially relied on strict prompt engineering to get structured responses, but faced latency issues. **Trade-off**: By switching to Gemini's strict `responseMimeType: "application/json"`, we sacrificed conversational flexibility during the Match phase in exchange for blazing-fast performance and guaranteed type-safety.
+2. **Context Compression**: The LLM context window limits the speed of processing massive candidate lists. **Trade-off**: Instead of feeding entire candidate biographies into the Match API, we dynamically strip the payload down to just `id`, `role`, `skills`, and `bio`, intentionally excluding bulky UI data (like avatar URLs) to optimize for speed and reduce API costs.
+3. **Simulated Chat Environment**: Building a real-world async email/SMS agent cannot be effectively demonstrated in a 3-minute video. **Trade-off**: We built an embedded chat simulator directly into the dashboard. While a real product would handle this asynchronously via backend queues, the simulator perfectly demonstrates the AI's logic and live dashboard updates in real-time.
+
 ## Local Setup Instructions
 
 1. **Clone the repository** (or extract the folder).
