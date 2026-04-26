@@ -45,7 +45,7 @@ ${chatHistoryText}
 
 Your task:
 1. Generate the next message from the AI Recruiter. You should be professional, engaging, and try to gauge their interest. Keep your response brief (1-3 sentences max). IMPORTANT: If the candidate clearly expresses that they are NOT interested or says "no", politely conclude the conversation immediately and wish them well. Do not pressure them or ask further questions.
-2. Calculate the current "Interest Score" from 0 to 100 based on the candidate's enthusiasm, responsiveness, and alignment in the chat history.
+2. Calculate the current "Interest Score" from 0 to 100 based on the candidate's enthusiasm, responsiveness, and alignment in the chat history. IMPORTANT: If the candidate says "no" or expresses they are not looking for a change, immediately set the Interest Score to 10 or lower.
 
 Return your response ONLY as a JSON object with two fields:
 - "reply": The text of your next message
@@ -60,7 +60,7 @@ Do not include markdown formatting like \`\`\`json.
 
     return NextResponse.json({ 
       reply: parsedResult.reply,
-      interestScore: parsedResult.interestScore
+      interestScore: Number(parsedResult.interestScore)
     });
 
   } catch (error: any) {
@@ -69,7 +69,7 @@ Do not include markdown formatting like \`\`\`json.
       const isCandidateInterested = messages[messages.length - 1]?.content.toLowerCase().includes('yes') || messages[messages.length - 1]?.content.toLowerCase().includes('interest');
       return NextResponse.json({ 
         reply: "I understand. (Simulated response due to API rate limit, please wait 30s)",
-        interestScore: isCandidateInterested ? 85 : 40
+        interestScore: isCandidateInterested ? 85 : 10
       });
     }
     return NextResponse.json({ error: "Failed to process chat" }, { status: 500 });
